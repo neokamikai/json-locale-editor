@@ -2,7 +2,7 @@
   "name": "translation-editor",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "jest"
   },
@@ -10,7 +10,15 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/angularjs": "^1.5.14-alpha",
+    "@types/exceljs": "^1.3.0",
     "@types/jest": "^26.0.20",
-    "jest": "^26.6.3"
+    "jest": "^26.6.3",
+    "nodemon": "^2.0.7"
+  },
+  "dependencies": {
+    "exceljs": "^4.2.0",
+    "express": "^4.17.1",
+    "multer": "^1.4.2"
   }
 }

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="app">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+  <title>Translation Editor</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.2/angular.min.js" integrity="sha512-7oYXeK0OxTFxndh0erL8FsjGvrl2VMDor6fVqzlLGfwOQQqTbYsGPv4ZZ15QHfSk80doyaM0ZJdvkyDcVO7KFA==" crossorigin="anonymous"></script>
+  <style>
+    .changed {
+      background-color: #a0F0a0;
+      border-color: #008000;
+    }
+    .unavailable {
+      background-color: #F0a0a0;
+      border-color: #800000;
+    }
+  </style>
+</head>
+
+<body ng-controller="MainController as $ctrl">
+  <div class="row" ng-if="$ctrl.mode=='select'">
+    <div class="col-12">
+      <div class="form-group">
+        <label for=""></label>
+        <button class="btn btn-primary btn-sm" type="button" ng-click="$ctrl.selectFile('upload')">Select file</button>
+        <div style="display: none;">
+          <input id="upload" type="file" ng-model="$ctrl.selectedFile" accept=".json" ng-change="$ctrl.onFileSelected($ctrl.selectedFile)" class="form-control file-input">
+        </div>
+      </div>
+    </div>
+    <div class="col-12">
+      <table class="table table-bordered table-striped table-hover">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Size</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="file in $ctrl.files">
+            <td>{{ file.name }}</td>
+            <td>{{ (file.size / 1024) | number: 1 }}kb</td>
+            <td><button type="button" class="btn btm-danger btn-sm" ng-click="$ctrl.removeFile($index)">Remove</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="col-12">
+      <button class="btn btn-sm btn-default" type="button" ng-click="$ctrl.manageTranslations()">Manage</button>
+    </div>
+  </div>
+  <div class="row" ng-if="$ctrl.mode=='manage'">
+    <div class="col-2">
+      <button class="btn btn-sm btn-block btn-primary" type="button" ng-click="$ctrl.mode = 'select'">Back</button>
+    </div>
+    <div class="col-5">
+      <button class="btn btn-sm btn-block btn-primary" type="button" ng-click="$ctrl.downloadCsv()">Download .csv</button>
+    </div>
+    <div class="col-5">
+      <button class="btn btn-sm btn-block btn-primary" type="button" ng-click="$ctrl.selectFile('uploadCsv')">Upload .csv</button>
+      <div style="display:none">
+        <input id="uploadCsv" type="file" ng-model="$ctrl.csvFile" accept=".csv" ng-change="$ctrl.onCsvFileSelected($ctrl.csvFile)" class="form-control file-input">
+      </div>
+    </div>
+    <div class="col-12">
+      <table class="table table-bordered table-striped table-hover">
+        <thead>
+          <tr>
+            <th colspan="{{ 1 + $ctrl.manage.allLanguages.length }}">
+              <span>{{ $ctrl.manage.allLanguages.length }} language(s).</span>
+              <span>{{ $ctrl.manage.allKeys.length }} keys.</span>
+              <span ng-if="$ctrl.updatedCount > 0">{{ $ctrl.updatedCount }} key(s) have been updated</span>
+            </th>
+          </tr>
+          <tr>
+            <th style="width: 1px;">Keys</th>
+            <th ng-repeat="lang in $ctrl.manage.allLanguages">{{lang}} <button type="button" class="btn btn-sm btn-warning" ng-click="$ctrl.downloadJson(lang)">.json</button></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="key in $ctrl.manage.allKeys">
+            <td>{{ key }}</td>
+            <td class="p-0" ng-repeat="lang in $ctrl.manage.allLanguages"><input type="text" ng-class="{ changed: $ctrl.manage.translations[key][lang] !== $ctrl.original[key][lang], unavailable: $ctrl.original[key][lang] === undefined }" ng-model="$ctrl.manage.translations[key][lang]" class="form-control"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <script type="module">
+    import Translator from './helpers/translation-manager/index.mjs';
+    const app = angular.module('app', []);
+    app.directive('fileInput', () => {
+      return {
+        restrict: 'C',
+        require: 'ngModel',
+        bind: {
+          value: '='
+        },
+        link: (scope, element, attrs, ngModel) => {
+          element.on('change', (event) => {
+            ngModel.$setViewValue(event.target.files[0]);
+            console.log(event.target.files[0]);
+          });
+          console.log('fileInput link', ngModel);
+        }
+      };
+    });
+    app.controller('MainController', ['$scope', '$http', '$timeout', function MainController($scope, $http, $timeout) {
+      const ctrl = this;
+      const upload = (file, key, endpoint) => {
+        const formData = new FormData();
+        formData.append('file', file);
+        return $http({
+          url: endpoint,
+          method: "POST",
+          data: formData,
+          headers: { 'Content-Type': undefined }
+        });
+      };
+      ctrl.mode = 'select';
+      ctrl.files = [];
+      console.log($http);
+      ctrl.selectFile = (id) => {
+        document.getElementById(id).click();
+      };
+      ctrl.clearFile = (id) => {
+        document.getElementById(id).value = null;
+      };
+      ctrl.manageTranslations = () => {
+        const translator = new Translator();
+        ctrl.files.forEach(file => {
+          translator.pushKeys(file.name, file.json);
+        });
+
+        ctrl.manage = translator;
+        ctrl.original = JSON.parse(angular.toJson(translator.translations));
+        ctrl.mode = 'manage';
+      };
+      ctrl.onFileSelected = (file) => {
+        if (file) {
+          ctrl.clearFile('upload');
+          upload(file, 'file', '/api/read-json')
+            .then(function (response) {
+              if (Array.isArray(response.data.files)) {
+                ctrl.files.push(...response.data.files);
+              }
+              console.log('upload response:', response.data);
+            });
+        }
+      };
+      ctrl.onCsvFileSelected = (file) => {
+        if (file) {
+          ctrl.clearFile('uploadCsv');
+          upload(file, 'csv', '/api/read-csv')
+            .then(function (response) {
+              if(Array.isArray(response.data.files)){
+                let changes = 0;
+                response.data.files.forEach((file)=>{
+                  if (Array.isArray(file.rows)) {
+                    const [header, ...data] = file.rows;
+                    const languages = header.slice(1);
+                    data.forEach(([key, ...values]) => {
+                      languages.forEach((lang, index) => {
+                        const result = ctrl.manage.set(lang, key, values[index]);
+                        if(result.changed){
+                          changes += 1;
+                          console.log(key, result);
+                        }
+                      });
+                    });
+                  }
+                });
+                ctrl.updatedCount = changes;
+                $timeout(()=>{
+                  $scope.$apply();
+
+                },1);
+              }
+              console.log('upload response:', response.data);
+            });
+        }
+      };
+      ctrl.removeFile = (index) => {
+        ctrl.files.splice(index, 1);
+      };
+      ctrl.downloadContent = (content, filename, type, appndBOM) => {
+        const anchor = document.createElement('A');
+        anchor.download = filename;
+        var BOM = new Uint8Array([0xEF,0xBB,0xBF]);
+        const byteData = appendBOM?[BOM, content]:[content]
+        const blob = new Blob([BOM, content], { encoding:"UTF-8", type })
+        anchor.href = window.URL.createObjectURL(blob);
+        anchor.style.display = 'none';
+        document.getElementsByTagName('body')[0].appendChild(anchor);
+        anchor.click();
+        anchor.remove();
+      };
+      ctrl.downloadCsv = () => {
+        const content = ctrl.manage.generateCsv();
+        ctrl.downloadContent(content, 'translations.csv', 'text/plain;charset=UTF-8', true);
+      };
+      ctrl.downloadJson = (lang) => {
+        const content = ctrl.manage.generateJson(lang, 2);
+        ctrl.downloadContent(content, `${lang}.json`, 'application/json;charset=UTF-8', false);
+      };
+    }]);
+  </script>
+</body>
+
+</html>
