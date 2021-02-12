@@ -135,6 +135,15 @@ class Translator {
     this.allKeys.forEach(pushFullKey);
     return JSON.stringify(json, null, spacing);
   }
+  generateProperties(language) {
+    const rows = [];
+    const pushFullKey = (fullPathKey) => {
+      const value = this.get(language, fullPathKey);
+      rows.push(`${fullPathKey}=${value}`);
+    };
+    this.allKeys.forEach(pushFullKey);
+    return rows.join('\n');
+  }
 }
 
 export default Translator;
