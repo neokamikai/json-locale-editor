@@ -1,5 +1,8 @@
 # Translation Manager
 
+## 2021-02-12 - v0.2.1 - "start" script and Docker image build/publish
+* Add script **start** on **package.json**
+* Add **Dockerfile** to allow docker image build and publishing
 ## 2021-02-12 - v0.2.0 - Layout and Support for .properties files
 * Layout changes:
   * Encapsulated layout in cards
