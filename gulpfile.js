@@ -22,13 +22,13 @@ const args = arg({
 
 var tasks = {
   'copy-public'(){
-    return gulp.src(paths.public).pipe(gulp.dest("dist/public"));
+    return gulp.src(paths.public).pipe(gulp.dest("dist/src/public"));
   },
   'build-server'(){  
     return tsProject
     .src()
     .pipe(tsProject()).js
-    .pipe(gulp.dest(tsProject.options.outDir));
+    .pipe(gulp.dest('dist/src/server'));
   }
 }
 
@@ -41,7 +41,7 @@ gulp.task("watch", function(){
   gulp.watch(paths.public, tasks['copy-public']);
 });
 const series = [];
-const shouldBuild = (!args['--build'] && !args['--watch']) || (args['--build'] && args['--watch'])
+const shouldBuild = (args['--build'] || !args['--watch'])
 const shouldWatch = args['--watch'];
 if(shouldBuild){
   series.push(

@@ -1,6 +1,7 @@
 # Translation Manager
 
 ## 2021-02-12 - v0.3.0 - Server in typescript + ESlint setup + Gulp build
+* Fix **gulpfile.js** build destinations and **shouldBuild** rule
 * Updated **package.json** including a lot modules for using **typescript**, **eslint** and **gulp**
 * Applied **eslint --fix** on **jest.config.js**
 * Adjusted **tsconfig.json** settings
