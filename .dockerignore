@@ -1,12 +1,9 @@
-node_modules
 .git
 .gitignore
 .vscode
 .editorconfig
 .eslintignore
 .eslintrc.js
-src
 CHANGELOG.md
 README.md
-gulpfile.js
 Dockerfile
