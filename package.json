@@ -2,22 +2,40 @@
   "name": "json-locale-editor",
   "version": "1.0.0",
   "description": "",
-  "main": "src/index.js",
+  "main": "dist/src/index.js",
   "scripts": {
-    "start": "node src/index.js",
-    "test": "jest"
+    "start": "node dist/src/server/index.js",
+    "dev": "ts-node-dev src/server/index.ts",
+    "lint:fix": "eslint --fix src",
+    "test": "jest",
+    "build": "gulp --build",
+    "build:tsc": "tsc -p .",
+    "build:watch": "gulp --build --watch"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@types/angularjs": "^1.5.14-alpha",
     "@types/exceljs": "^1.3.0",
+    "@types/express": "^4.17.11",
     "@types/jest": "^26.0.20",
+    "@types/multer": "^1.4.5",
+    "@types/node": "^14.14.27",
+    "@typescript-eslint/eslint-plugin": "^4.15.0",
+    "@typescript-eslint/parser": "^4.15.0",
+    "eslint": "^7.19.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.22.1",
+    "gulp": "^4.0.2",
+    "gulp-typescript": "^6.0.0-alpha.1",
     "jest": "^26.6.3",
-    "nodemon": "^2.0.7"
+    "ts-jest": "^26.5.1",
+    "ts-node": "^9.1.1",
+    "ts-node-dev": "^1.1.1",
+    "typescript": "^4.1.5"
   },
   "dependencies": {
+    "arg": "^5.0.0",
     "exceljs": "^4.2.0",
     "express": "^4.17.1",
     "multer": "^1.4.2"
