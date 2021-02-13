@@ -1,6 +1,7 @@
 # Translation Manager
 
 ## 2021-02-12 - v0.3.0 - Server in typescript + ESlint setup + Gulp build
+* Applied **eslint --fix** on **jest.config.js**
 * Adjusted **tsconfig.json** settings
 * Add **gulpfile.js**
 * Update **.editorconfig** ***end_of_line*** setting to use **lf** instead of **crlf**
