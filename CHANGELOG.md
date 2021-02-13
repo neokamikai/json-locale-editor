@@ -1,5 +1,8 @@
 # Translation Manager
 
+## 2021-02-12 - v0.3.0 - Server in typescript + ESlint setup + Gulp build
+* Add some entries to **.gitignore**: **package-lock.json**, **dist**, **tmp**, **temp** and **~\***
+
 ## 2021-02-12 - v0.2.1 - "start" script and Docker image build/publish
 * Add script **start** on **package.json**
 * Add **Dockerfile** to allow docker image build and publishing
