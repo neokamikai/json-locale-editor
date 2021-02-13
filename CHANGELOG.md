@@ -1,6 +1,7 @@
 # Translation Manager
 
 ## 2021-02-12 - v0.3.0 - Server in typescript + ESlint setup + Gulp build
+* Update **.editorconfig** ***end_of_line*** setting to use **lf** instead of **crlf**
 * Add **.eslintignore** and **.eslintrc.js**
 * Add **.dockerignore**
 * Add some entries to **.gitignore**: **package-lock.json**, **dist**, **tmp**, **temp** and **~\***
