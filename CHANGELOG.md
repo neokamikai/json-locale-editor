@@ -1,6 +1,7 @@
 # Translation Manager
 
 ## 2021-02-12 - v0.3.0 - Server in typescript + ESlint setup + Gulp build
+* Applied **eslint --fix** on **src/public/helpers/translation-manager/index.spec.js**
 * Enable debug for **npm run dev** or **yarn dev**
 * Fix **.dockerignore** and **Dockerfile** to properly work with gulp and typescript
 * Fix **gulpfile.js** build destinations and **shouldBuild** rule
