@@ -1,6 +1,7 @@
 # Translation Manager
 
 ## 2021-02-12 - v0.3.0 - Server in typescript + ESlint setup + Gulp build
+* Add **.eslintignore** and **.eslintrc.js**
 * Add **.dockerignore**
 * Add some entries to **.gitignore**: **package-lock.json**, **dist**, **tmp**, **temp** and **~\***
 
