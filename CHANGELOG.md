@@ -1,6 +1,7 @@
 # Translation Manager
 
 ## 2021-02-12 - v0.3.0 - Server in typescript + ESlint setup + Gulp build
+* Add **.vscode/tasks.json** with a **Build Watch** task
 * Fixed an error when parsing JSON files with BOM
 * Refactored all **server** side code to typescript and moved it to **server** folder
 * Applied **eslint --fix** on **src/public/helpers/translation-manager/index.spec.js**
