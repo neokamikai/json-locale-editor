@@ -50,9 +50,24 @@ const readHandler = (parser: Function, key: string) => async (
     res.sendStatus(400);
   }
 };
-
+const jsonParser = (content: string) => {
+  try {
+    return JSON.parse(content);
+  } catch (error) {
+    let errorPos = Number(error.message.substr(error.message.indexOf('at position')+12));
+    const offset = 3;
+    let countLinesBeforeError = content.substr(0, errorPos)
+      .replace(/\r/g, '').replace(/\n$/, '').split('\n').length-2;
+    let allLines = content.split(/\n/);
+    allLines[countLinesBeforeError] = `<span style="color: red">${allLines[countLinesBeforeError]}</span>`;
+    let linesToDisplay = allLines
+      .slice(Math.max(0, countLinesBeforeError-offset), Math.min(countLinesBeforeError+offset+1,allLines.length));
+      error.message += `\n<pre style="text-align: left">\n${linesToDisplay.join('\n')}</pre>`;
+      throw error;
+  }
+}
 api.post('/read-properties', upload.any(), readHandler((content: string) => parseProperties(content), 'json'));
-api.post('/read-json', upload.any(), readHandler((content: string) => JSON.parse(content.trim()), 'json'));
+api.post('/read-json', upload.any(), readHandler(jsonParser, 'json'));
 api.post('/read-csv', upload.any(), readHandler((content: string) => parseCsv(content), 'rows'));
 /*
 * Import/Export .csv

@@ -1,6 +1,7 @@
 # Translation Manager
 
 ## 2021-05-14 - v0.3.1 - Server in typescript + ESlint setup + Gulp build
+* Refactor **JSON parser** to return more details when parse fails
 * Add **sweetAlert2** and show alert when **/api/read-json** fails
 * Fix method **generateJson** to properly rebuild json
 
