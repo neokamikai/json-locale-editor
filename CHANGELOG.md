@@ -1,5 +1,8 @@
 # Translation Manager
 
+## 2021-05-14 - v0.3.1 - Server in typescript + ESlint setup + Gulp build
+* Fix method **generateJson** to properly rebuild json
+
 ## 2021-02-12 - v0.3.0 - Server in typescript + ESlint setup + Gulp build
 * Add **.vscode/tasks.json** with a **Build Watch** task
 * Fixed an error when parsing JSON files with BOM
