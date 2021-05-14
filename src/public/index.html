@@ -8,6 +8,7 @@
   <title>Translation Editor</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
   <script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.2/angular.min.js" integrity="sha512-7oYXeK0OxTFxndh0erL8FsjGvrl2VMDor6fVqzlLGfwOQQqTbYsGPv4ZZ15QHfSk80doyaM0ZJdvkyDcVO7KFA==" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/10.16.6/sweetalert2.all.min.js" integrity="sha512-jQxNe7fqaqehR3t/JfoxC8y2dwkEIL/7a6JWbs6sQdSCI/6Kd0t2okI9nhuKeSUgM5JDTDgdUzLzSPovB2lOBQ==" crossorigin="anonymous"></script>
   <style>
     .changed {
       background-color: #a0F0a0;
@@ -182,6 +183,9 @@
         if (file) {
           ctrl.clearFile('upload');
           upload(file, 'file', '/api/read-json')
+            .catch(function(response){
+              swal.fire('Error', 'failed to parse json file: '+response.data.error, 'error');
+            })
             .then(function (response) {
               if (Array.isArray(response.data.files)) {
                 ctrl.files.push(...response.data.files);

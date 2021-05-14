@@ -124,7 +124,7 @@ class Translator {
           obj[key] = {};
         }
         if (remainingKeys.length > 0) {
-          return appendKey(obj, remainingKeys[0], remainingKeys.slice(1));
+          return appendKey(obj[key], remainingKeys[0], remainingKeys.slice(1));
         }
 
         return obj[key];

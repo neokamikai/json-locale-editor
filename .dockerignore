@@ -1,0 +1,9 @@
+.git
+.gitignore
+.vscode
+.editorconfig
+.eslintignore
+.eslintrc.js
+CHANGELOG.md
+README.md
+Dockerfile

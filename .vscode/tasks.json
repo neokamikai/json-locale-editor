@@ -1,0 +1,15 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "npm",
+			"script": "Build Watch",
+			"problemMatcher": [
+				"$tsc"
+			],
+			"group": "build",
+			"label": "Build and Watch with gulp",
+			"detail": "gulp --build --watch"
+		}
+	]
+}

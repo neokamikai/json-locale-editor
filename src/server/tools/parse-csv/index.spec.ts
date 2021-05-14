@@ -1,4 +1,4 @@
-const parseCsv = require('.');
+import parseCsv from './index';
 
 describe('parseCsv', () => {
   it('should return an array of lines, where each line is an array of strings', () => {
