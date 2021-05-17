@@ -1,5 +1,8 @@
 # Translation Manager
 
+## 2021-05-14 - v0.3.2 - Feature Hide unattended rows
+* Add checkbox for hiding/showing rows without changes/errors
+
 ## 2021-05-14 - v0.3.1 - Server in typescript + ESlint setup + Gulp build
 * Refactor **JSON parser** to return more details when parse fails
 * Add **sweetAlert2** and show alert when **/api/read-json** fails

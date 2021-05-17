@@ -99,6 +99,15 @@
               </div>
             </div>
             <div class="col-12">
+              <div class="form-group">
+                <label for="">Filters</label>
+                <div>
+                  <span><input type="checkbox" name="hide-problemless" ng-model="$ctrl.filters.hideProblemless"></span> 
+                  <span>{{!$ctrl.filters.hideProblemless? 'Esconder linhas sem divergencias':'Mostrar linhas sem divergencias'}}</span>
+                </div>
+              </div>
+            </div>
+            <div class="col-12">
               <table class="table table-bordered table-striped table-hover">
                 <thead>
                   <tr>
@@ -117,7 +126,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr ng-repeat="key in $ctrl.manage.allKeys">
+                  <tr ng-repeat="key in $ctrl.manage.allKeys" ng-if="!$ctrl.filters.hideProblemless || ($ctrl.filters.hideProblemless && $ctrl.keyHasProblems(key))">
                     <td>{{ key }}</td>
                     <td class="p-0" ng-repeat="lang in $ctrl.files"><input type="text" ng-class="{ changed: $ctrl.manage.translations[key][lang.name] !== $ctrl.original[key][lang.name], unavailable: $ctrl.original[key][lang.name] === undefined }" ng-model="$ctrl.manage.translations[key][lang.name]" class="form-control"></td>
                   </tr>
@@ -253,6 +262,14 @@
         anchor.click();
         anchor.remove();
       };
+      ctrl.keyHasProblems = (key) => ctrl.files
+      .some((lang)=>{
+        const editableValue = ctrl.manage.translations[key][lang.name];
+        const originalValue = ctrl.original[key][lang.name];
+          const hasChanged = editableValue !== originalValue;
+          const unavailableForLang = originalValue === undefined;
+          return hasChanged || unavailableForLang;
+        });
       ctrl.downloadCsv = () => {
         const content = ctrl.manage.generateCsv();
         ctrl.downloadContent(content, 'translations.csv', 'text/plain;charset=UTF-8', true);
