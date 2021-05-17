@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+  locale-editor:
+    image: douglasdomingues/locale-editor
+    restart: unless-stopped
+    ports:
+      - '3999:3000'
