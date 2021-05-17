@@ -1,5 +1,10 @@
 # Translation Manager
 
+## 2021-05-14 - v0.3.4 - Feature Multiple JSON File selection + Gradient background for changed/unavailable + Docker batch
+* Add support for selecting multiple **.json** files at once
+* Add CSS class **.changed.unavailable** to change background-image to left-to-right linear gradient from green-to-red
+* Add **docker-build-and-publish.bat**
+
 ## 2021-05-14 - v0.3.3 - Feature Hide unattended rows Update + Docker Publish script + Docker compose
 * Add **docker-compose.yml**
 * Add package.json script **docker-publish**

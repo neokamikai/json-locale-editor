@@ -19,6 +19,11 @@
       background-color: #F0a0a0;
       border-color: #800000;
     }
+
+    .changed.unavailable {
+      background-image: linear-gradient(to right, #a0F0a0, 75%, #F0a0a0);
+      border-color: #008000;
+    }
   </style>
 </head>
 
@@ -38,7 +43,7 @@
                 <button class="btn btn-primary btn-sm" type="button" ng-click="$ctrl.selectFile('uploadProperties')">Select .properties file</button>
               </div>
               <div style="display: none;">
-                <input id="upload" type="file" ng-model="$ctrl.selectedFile" accept=".json" ng-change="$ctrl.onFileSelected($ctrl.selectedFile)" class="form-control file-input">
+                <input id="upload" type="file" multiple ng-model="$ctrl.selectedFiles" accept=".json" ng-change="$ctrl.onFilesSelected($ctrl.selectedFiles)" class="form-control file-input">
                 <input id="uploadProperties" type="file" ng-model="$ctrl.selectedPropertiesFile" accept=".properties" ng-change="$ctrl.onPropertiesFileSelected($ctrl.selectedPropertiesFile)" class="form-control file-input">
               </div>
             </div>
@@ -150,8 +155,15 @@
         },
         link: (scope, element, attrs, ngModel) => {
           element.on('change', (event) => {
-            ngModel.$setViewValue(event.target.files[0]);
-            console.log(event.target.files[0]);
+            console.log([event.target]);
+            if(event.target.multiple){
+              ngModel.$setViewValue(event.target.files);
+              console.log(event.target.files);
+            }
+            else {
+              ngModel.$setViewValue(event.target.files[0]);
+              console.log(event.target.files[0]);
+            }
           });
           console.log('fileInput link', ngModel);
         }
@@ -188,7 +200,13 @@
         ctrl.original = JSON.parse(angular.toJson(translator.translations));
         ctrl.mode = 'manage';
       };
-      ctrl.onFileSelected = (file) => {
+      ctrl.onFilesSelected = (files) => {
+        Promise.all([...files].map((file) => new Promise((resolve) => ctrl.onFileSelected(file, resolve))))
+        .then(() => {
+          console.log('all files uploaded!');
+        });
+      }
+      ctrl.onFileSelected = (file, callback) => {
         if (file) {
           ctrl.clearFile('upload');
           upload(file, 'file', '/api/read-json')
