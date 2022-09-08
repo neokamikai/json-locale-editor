@@ -41,7 +41,7 @@ const readHandler = (parser: Function, key: string) => async (
         files,
         body: req.body,
       });
-    } catch (error) {
+    } catch (error: any) {
       res.status(400).json({
         error: error.message,
       });
@@ -52,8 +52,8 @@ const readHandler = (parser: Function, key: string) => async (
 };
 const jsonParser = (content: string) => {
   try {
-    return JSON.parse(content);
-  } catch (error) {
+    return JSON.parse(content.trim());
+  } catch (error: any) {
     let errorPos = Number(error.message.substr(error.message.indexOf('at position')+12));
     const offset = 3;
     let countLinesBeforeError = content.substr(0, errorPos)

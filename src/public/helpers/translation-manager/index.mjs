@@ -80,18 +80,26 @@ class Translator {
       previousValue,
     };
   }
-  get(language, key) {
+  get(language, key, newKeys) {
     if (this.allKeys.includes(key) && this.allLanguages.includes(language)) {
       const value = this.translations[key][language];
       if (typeof value === 'string') return value;
       if (![null, undefined].includes(value)) return `${value}`;
+    }
+    else if(Array.isArray(newKeys)){
+      const index = newKeys.findIndex((item) => item.key === key);
+      if(index>=0) {
+        const value = newKeys[index];
+        if (typeof value === 'string') return value;
+        if (![null, undefined].includes(value)) return `${value}`;
+      }
     }
     return '';
   }
   output() {
     return this.translations;
   }
-  generateCsv() {
+  generateCsv(newKeys) {
     const normalizeValue = (value) => {
       let normalizedValue = value;
       if (/^[+-=]/.test(normalizedValue)) {
@@ -104,19 +112,19 @@ class Translator {
     };
     const content = [
       ['Keys', ...this.allLanguages],
-      ...this.allKeys.map(key => ([
+      ...[...this.allKeys, ...newKeys.map(item => item.key)].map(key => ([
         key, ...this.allLanguages.map(language => this.get(language, key)),
       ])),
     ].map(keys => keys.map(column => normalizeValue(column.replace(/^([+-=])/, '\'$1'))).join(',')).join('\n');
     return content;
   }
-  generateJson(language, spacing) {
+  generateJson(language, spacing, newKeys = []) {
     const json = {
 
     };
     const pushFullKey = (fullPathKey) => {
       const keys = this.decodeKey(fullPathKey);
-      const value = this.get(language, fullPathKey);
+      const value = this.get(language, fullPathKey, newKeys);
       const lastKey = keys.pop();
       const appendKey = (obj, key, remainingKeys) => {
         if (key === undefined) return obj;
@@ -132,16 +140,16 @@ class Translator {
       const final = appendKey(json, keys[0], keys.slice(1));
       final[lastKey] = value;
     };
-    this.allKeys.forEach(pushFullKey);
+    [...this.allKeys, ...newKeys.map(item => item.key)].sort((left, right) => left < right? -1: 1).forEach(pushFullKey);
     return JSON.stringify(json, null, spacing);
   }
-  generateProperties(language) {
+  generateProperties(language, newKeys = []) {
     const rows = [];
     const pushFullKey = (fullPathKey) => {
-      const value = this.get(language, fullPathKey);
+      const value = this.get(language, fullPathKey, newKeys);
       rows.push(`${fullPathKey}=${value}`);
     };
-    this.allKeys.forEach(pushFullKey);
+    [...this.allKeys, ...newKeys.map(item => item.key)].forEach(pushFullKey);
     return rows.join('\n');
   }
 }

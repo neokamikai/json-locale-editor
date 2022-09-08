@@ -24,6 +24,7 @@
       background-image: linear-gradient(to right, #a0F0a0, 75%, #F0a0a0);
       border-color: #008000;
     }
+
   </style>
 </head>
 
@@ -78,7 +79,7 @@
           </table>
         </div>
         <div class="card-footer">
-          <button class="btn btn-sm btn-default" type="button" ng-click="$ctrl.manageTranslations()">Manage</button>
+          <button class="btn btn-sm btn-block btn-danger" type="button" ng-click="$ctrl.manageTranslations()">Manage</button>
         </div>
       </div>
     </div>
@@ -118,7 +119,7 @@
                   <tr>
                     <th colspan="{{ 1 + $ctrl.manage.allLanguages.length }}">
                       <span>{{ $ctrl.manage.allLanguages.length }} language(s).</span>
-                      <span>{{ $ctrl.manage.allKeys.length }} keys.</span>
+                      <span>{{ $ctrl.manage.allKeys.length }}<span ng-if="$ctrl.newKeys.length > 0"> + {{ $ctrl.newKeys.length }} new</span> keys .</span>
                       <span ng-if="$ctrl.updatedCount > 0">{{ $ctrl.updatedCount }} key(s) have been updated</span>
                     </th>
                   </tr>
@@ -129,10 +130,22 @@
                       <button type="button" class="btn btn-sm btn-warning" ng-if="lang.ext == '.properties'" ng-click="$ctrl.downloadProperties(lang.name)">.properties</button>
                     </th>
                   </tr>
+                  <tr>
+                    <th class="p-0" colspan="{{1+$ctrl.files.length}}"><button class="btn btn-block btn-primary" type="button" ng-click="$ctrl.addKey()">Add Key</button></th>
+                  </tr>
                 </thead>
                 <tbody>
+                  <tr ng-repeat="key in $ctrl.newKeys">
+                    <td class="p-0"><input type="text" ng-model="key.key" class="form-control">
+                      <div class="text-danger" ng-if="$ctrl.isValidKey(key.key) == 'empty'"><b>Key path can not be empty!</div>
+                      <div class="text-danger" ng-if="$ctrl.isValidKey(key.key) == 'exists'">Key "<b>{{key.key}}</b>" already exists!</div>
+                      <div class="text-danger" ng-if="$ctrl.isValidKey(key.key) == 'base-key'">"<b>{{key.key}}</b>" is a base path for other keys!</div>
+                      <div class="text-danger" ng-if="$ctrl.isValidKey(key.key) == 'invalid'">"<b>{{key.key}}</b>" is not a valid key!</div>
+                    </td>
+                    <td class="p-0" ng-repeat="lang in $ctrl.files"><input type="text" ng-model="key.lang[lang.name]" class="form-control"></td>
+                  </tr>
                   <tr ng-repeat="key in $ctrl.manage.allKeys" ng-if="!$ctrl.filters.hideProblemless || ($ctrl.filters.hideProblemless && $ctrl.keyHasProblems(key))">
-                    <td>{{ key }}</td>
+                    <td>{{ key }} <button class="btn btn-sm btn-warning float-right" type="button" ng-click="$ctrl.addKey(key)">Add Sibling</button></td>
                     <td class="p-0" ng-repeat="lang in $ctrl.files"><input type="text" ng-class="{ changed: $ctrl.manage.translations[key][lang.name] !== $ctrl.original[key][lang.name], unavailable: $ctrl.original[key][lang.name] === undefined }" ng-model="$ctrl.manage.translations[key][lang.name]" class="form-control"></td>
                   </tr>
                 </tbody>
@@ -208,6 +221,7 @@
       }
       ctrl.onFileSelected = (file, callback) => {
         if (file) {
+          console.log(file);
           ctrl.clearFile('upload');
           upload(file, 'file', '/api/read-json')
             .catch(function(response){
@@ -289,17 +303,31 @@
           return hasChanged || unavailableForLang;
         });
       ctrl.downloadCsv = () => {
-        const content = ctrl.manage.generateCsv();
+        const content = ctrl.manage.generateCsv(ctrl.newKeys);
         ctrl.downloadContent(content, 'translations.csv', 'text/plain;charset=UTF-8', true);
       };
       ctrl.downloadJson = (lang) => {
-        const content = ctrl.manage.generateJson(lang, 2);
+        const content = ctrl.manage.generateJson(lang, 2, ctrl.newKeys);
         ctrl.downloadContent(content, `${lang}.json`, 'application/json;charset=UTF-8', false);
       };
       ctrl.downloadProperties = (lang) => {
-        const content = ctrl.manage.generateProperties(lang);
+        const content = ctrl.manage.generateProperties(lang, ctrl.newKeys);
         ctrl.downloadContent(content, `${lang}.properties`, 'text/plain;charset=UTF-8', false);
       };
+      ctrl.newKeys = [];
+      ctrl.addKey = (sibling='') => {
+        let key = `${sibling}`.split('.').slice(0, -1).concat(`key${ctrl.newKeys.length+1}`).join('.');
+        ctrl.newKeys.push({ key, lang: {} });
+      };
+      ctrl.isBasePath = (keyToCheck) => ctrl.manage.allKeys
+        .find(key => key.indexOf(`${keyToCheck}.`) === 0);
+      ctrl.isValidKey = (keyToCheck) => {
+        if(`${keyToCheck}`.trim().length === 0) return 'empty';
+        if(/[.]$/.test(`${keyToCheck}`.trim())) return 'invalid';
+        if(ctrl.isBasePath(`${keyToCheck}`)) return 'base-key';
+        if(ctrl.manage.allKeys.includes(keyToCheck)) return 'exists';
+        return '';
+      }
     }]);
   </script>
 </body>
