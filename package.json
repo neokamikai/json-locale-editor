@@ -1,6 +1,6 @@
 {
   "name": "json-locale-editor",
-  "version": "1.0.0",
+  "version": "0.3.3",
   "description": "",
   "main": "dist/src/index.js",
   "scripts": {
