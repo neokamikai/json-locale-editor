@@ -3,7 +3,7 @@
 	"tasks": [
 		{
 			"type": "npm",
-			"script": "Build Watch",
+      "script": "build:watch",
 			"problemMatcher": [
 				"$tsc"
 			],
